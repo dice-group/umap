@@ -82,6 +82,13 @@ void EvictManager::schedule_eviction(PageDescriptor* pd)
   m_evict_workers->send_work(work);
 }
 
+void EvictManager::schedule_hole_punch_eviction(PageDescriptor* pd)
+{
+    WorkItem work = { .page_desc = pd, .type = Umap::WorkItem::WorkType::EVICT_PUNCH_HOLE };
+
+    m_evict_workers->send_work(work);
+}
+
 void EvictManager::schedule_flush(PageDescriptor* pd)
 {
   WorkItem work = { .page_desc = pd, .type = Umap::WorkItem::WorkType::FLUSH };

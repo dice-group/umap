@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: LGPL-2.1-only
 #############################################################################
 add_subdirectory(churn)
+add_subdirectory(eviction)
 add_subdirectory(flush_buffer)
 add_subdirectory(pfbenchmark)
 add_subdirectory(multi_thread)

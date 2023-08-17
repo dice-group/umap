@@ -53,6 +53,18 @@ class RegionManager {
         , uint64_t mmap_region_size
     );
 
+    void punchHoleIntoRegion(
+          char*  mmap_region
+        , off_t  offset
+        , size_t length
+    );
+
+    void evictRegionPartial(
+          char*  mmap_region
+        , off_t  offset
+        , size_t length
+    );
+
     int flush_buffer();
     void prefetch(int npages, umap_prefetch_item* page_array);
     void fetch_and_pin( char* paddr, uint64_t size );

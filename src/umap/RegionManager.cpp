@@ -90,6 +90,30 @@ RegionManager::removeRegion( char* region )
   }
 }
 
+void
+RegionManager::evictRegionPartial( char* region, off_t offset, size_t length )
+{
+  std::lock_guard<std::mutex> lock(m_mutex);
+  auto it = m_active_regions.find(region);
+
+  if (it == m_active_regions.end())
+    UMAP_ERROR("umap fault monitor not found for: " << (void*)region);
+
+  m_buffer->evict_region_partial(it->second, offset, length);
+}
+
+void
+RegionManager::punchHoleIntoRegion( char* region, off_t offset, size_t length )
+{
+  std::lock_guard<std::mutex> lock(m_mutex);
+  auto it = m_active_regions.find(region);
+
+  if (it == m_active_regions.end())
+    UMAP_ERROR("umap fault monitor not found for: " << (void*)region);
+
+  m_buffer->evict_region_partial(it->second, offset, length, true);
+}
+
 int 
 RegionManager::flush_buffer(){
 

@@ -206,6 +206,36 @@ void Buffer::evict_region(RegionDescriptor* rd)
   }
 }
 
+void Buffer::evict_region_partial(RegionDescriptor* rd, off_t offset, size_t length, bool punch_hole)
+{
+    char *range_begin = rd->start() + offset;
+    char *range_end = range_begin + length;
+
+    lock();
+    for (auto it = m_busy_pages.begin(); it != m_busy_pages.end();) {
+        auto *pd = *it;
+        if(pd->page < range_begin || pd->page >= range_end) {
+            ++it;
+            continue;
+        }
+
+        if(pd->state != PageDescriptor::State::LEAVING){
+            pd->deferred = true;
+            wait_for_page_state(pd, PageDescriptor::State::PRESENT);
+            pd->set_state_leaving();
+
+            if(punch_hole)
+              m_rm.get_evict_manager()->schedule_hole_punch_eviction(pd);
+            else
+              m_rm.get_evict_manager()->schedule_eviction(pd);
+        }
+        wait_for_page_state(pd, PageDescriptor::State::FREE);
+        release_page_descriptor(pd);
+        it = m_busy_pages.erase(it);
+    }
+    unlock();
+}
+
 bool Buffer::low_threshold_reached( void )
 {
   return m_busy_pages.size() <= m_evict_low_water;

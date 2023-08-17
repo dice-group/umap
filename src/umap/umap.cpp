@@ -47,6 +47,29 @@ uunmap(void*  addr, uint64_t length)
   return 0;
 }
 
+int
+uadvise(void* addr, size_t length, int advice)
+{
+  if (advice == 0)
+    return 0;
+
+  if (!(advice & UADV_REMOVE) && !(advice & UADV_DONTNEED)) {
+      errno = EINVAL;
+      return -1;
+  }
+
+  auto& rm = Umap::RegionManager::getInstance();
+
+  char* char_addr = static_cast<char*>(addr);
+  char* region_base = rm.containing_region(char_addr)->start();
+
+  if (advice & UADV_REMOVE)
+    rm.punchHoleIntoRegion(region_base, char_addr - region_base, length);
+  else if (advice & UADV_DONTNEED)
+    rm.evictRegionPartial(region_base, char_addr - region_base, length);
+
+  return 0;
+}
 
 int umap_flush(){
   

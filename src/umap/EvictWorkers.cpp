@@ -30,7 +30,7 @@ void EvictWorkers::EvictWorker( void )
 
     auto pd = w.page_desc;
 
-    if ( pd->dirty ) {
+    if ( w.type != Umap::WorkItem::WorkType::EVICT_PUNCH_HOLE && pd->dirty ) {
       auto store = pd->region->store();
       auto offset = pd->region->store_offset(pd->page);
 
@@ -38,7 +38,7 @@ void EvictWorkers::EvictWorker( void )
 
       if (store->write_to_store(pd->page, page_size, offset) == -1)
         UMAP_ERROR("write_to_store failed: "
-            << errno << " (" << strerror(errno) << ")");
+                           << errno << " (" << strerror(errno) << ")");
 
       pd->dirty = false;
     }
@@ -49,6 +49,14 @@ void EvictWorkers::EvictWorker( void )
     if (w.type != Umap::WorkItem::WorkType::FAST_EVICT) {
       if (madvise(pd->page, page_size, MADV_DONTNEED) == -1)
         UMAP_ERROR("madvise failed: " << errno << " (" << strerror(errno) << ")");
+    }
+
+    if (w.type == Umap::WorkItem::WorkType::EVICT_PUNCH_HOLE) {
+      auto store = pd->region->store();
+      auto offset = pd->region->store_offset(pd->page);
+
+      if (store->punch_hole(page_size, offset) == -1)
+        UMAP_ERROR("punch_hole failed: " << errno << " (" << strerror(errno) << ")");
     }
 
     UMAP_LOG(Debug, "Removing page: " << w.page_desc);

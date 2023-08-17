@@ -63,6 +63,12 @@ int uunmap(
   , size_t length
 );
 
+int uadvise(
+    void* addr
+  , size_t length
+  , int advice
+);
+
 int umap_flush(); 
 
 struct umap_prefetch_item {
@@ -90,7 +96,10 @@ int      umapcfg_get_evict_high_water_threshold( void );
  * flags
  */
 #define UMAP_PRIVATE    MAP_PRIVATE // Note - UMAP_SHARED not currently supported
-#define UMAP_FIXED      MAP_FIXED   // See mmap(2) - This flag is currently then only flag supported.
+#define UMAP_FIXED      MAP_FIXED   // See mmap(2) - This flag is currently the only flag supported.
+
+#define UADV_DONTNEED   MADV_DONTNEED // See madvise(2)
+#define UADV_REMOVE     MADV_REMOVE   // See madvise(2)
 
 /*
  * Return codes

@@ -48,6 +48,7 @@ namespace Umap {
       std::vector<PageDescriptor*> evict_oldest_pages( void );
       void process_page_event(char* paddr, bool iswrite, RegionDescriptor* rd);
       void evict_region(RegionDescriptor* rd);
+      void evict_region_partial(RegionDescriptor* rd, off_t offset, size_t length, bool punch_hole = false);
       void flush_dirty_pages();
     
       explicit Buffer( void );

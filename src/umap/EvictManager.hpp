@@ -22,6 +22,7 @@ namespace Umap {
       EvictManager( void );
       ~EvictManager( void );
       void schedule_eviction(PageDescriptor* pd);
+      void schedule_hole_punch_eviction(PageDescriptor* pd);
       void schedule_flush(PageDescriptor* pd);
       void EvictAll( void );
       void WaitAll( void );

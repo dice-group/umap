@@ -17,7 +17,6 @@ namespace Umap {
 
       ssize_t read_from_store(char* buf, size_t nb, off_t off);
       ssize_t  write_to_store(char* buf, size_t nb, off_t off);
-
       int punch_hole(size_t nb, off_t off);
     private:
       void* region;

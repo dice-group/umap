@@ -126,6 +126,20 @@ namespace Umap {
       return written;
     }
 
+    int SparseStore::punch_hole(size_t nb, off_t off) {
+      off_t file_offset;
+      int fd = get_fd(off, file_offset);
+      int ret = fallocate(fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, file_offset, static_cast<__off_t>(nb));
+      if(ret == -1) {
+        int eno = errno;
+        UMAP_ERROR("fallocate(fd=" << fd
+                        << ", mode=FALLOC_FL_PUNCH_HOLE|FALLOC_FL_KEEP_SIZE, off=" << file_offset
+                        << ", len=" << nb
+                        << "): Failed - " << strerror(eno));
+      }
+      return ret;
+    }
+
     int SparseStore::close_files(){
       int return_status = 0;
       for (int i = 0 ; i < num_files ; i++){

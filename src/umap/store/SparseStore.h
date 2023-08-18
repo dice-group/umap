@@ -18,6 +18,7 @@ namespace Umap {
     ~SparseStore();
     ssize_t read_from_store(char* buf, size_t nb, off_t off);
     ssize_t write_to_store(char* buf, size_t nb, off_t off);
+    int punch_hole(size_t nb, off_t off);
     size_t get_current_capacity();
     static size_t get_capacity(std::string base_path);
     int close_files();

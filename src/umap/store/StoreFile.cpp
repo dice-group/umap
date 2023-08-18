@@ -62,16 +62,14 @@ namespace Umap {
 
   int StoreFile::punch_hole(size_t nb, off_t off)
   {
-    int ret;
-    ret = fallocate(fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, off, static_cast<__off_t>(nb));
+    int ret = fallocate(fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, off, static_cast<__off_t>(nb));
     if (ret == -1) {
-        int eno = errno;
-        UMAP_ERROR("fallocate(fd=" << fd
-                        << ", mode=FALLOC_FL_PUNCH_HOLE|FALLOC_FL_KEEP_SIZE, off=" << off
-                        << ", len=" << nb
-                        << "): Failed - " << strerror(eno));
+      int eno = errno;
+      UMAP_ERROR("fallocate(fd=" << fd
+                    << ", mode=FALLOC_FL_PUNCH_HOLE|FALLOC_FL_KEEP_SIZE, off=" << off
+                    << ", len=" << nb
+                    << "): Failed - " << strerror(eno));
     }
-
     return ret;
   }
 }
